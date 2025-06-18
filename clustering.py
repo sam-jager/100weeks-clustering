@@ -49,7 +49,7 @@ df['Round'] = df['Round'].astype(float).astype(int).astype(str)
 
 df = df.sort_values(by='Round', ascending=True)
 
-# --- VARIABELEN LIJSTEN ---
+
 numerical = ["savinghowmuch_1", "savinghowmuch_2", "savinghowmuch_3", "savingstotal_1", "debtamount_1", "timewatersource_1"]
 ordered_categorical = [*[f"foodsecurity{i}freq" for i in range(1, 10)], *[f"anxiety{i}" for i in range(1, 8)], "psychwellbeing_1", "psychwellbeing_3", "psychwellbeing_5", "psychwellbeing2_5"]
 categorical = ["fuelcooking", "sourcelighting", "watersource", "Toiletfacility", "materialroof", "materialfloor", "materialwallsext", *[f"HHMschoolcompl_{n}" for n in range(1, 6)], "schoolcompleted", "livestocknumbers_1", *[f"livestocknumbers_{i}" for i in [1, 13, 3, 4, 5, 6, 11, 8, 9, 7, 2, 10]], "occupationmain"]
@@ -57,7 +57,7 @@ binary = ["childmortality", *[f"foodsecurity{i}" for i in range(1, 10)], *[f"HHM
 binary_neg = ["debt", "foodsecurity1", "foodsecurity2", "foodsecurity3", "foodsecurity4", "foodsecurity5", "foodsecurity6", "foodsecurity7", "foodsecurity8", "foodsecurity9", "childmortality", "jealousy", "assetsmatrix1_4", "assetsmatrix1_5", "assetsmatrix1_22", "assetsmatrix2_15", "assetsmatrix2_8", "assetsmatrix3_17", "assetsmatrix2_17", "assetsmatrix2_18", "assetsmatrix2_19", "assetsmatrix2_11", "assetsmatrix3_15", "assetsmatrix3_23"]
 binary_pos = ["HHMschoolnow_1", "HHMschoolnow_2", "HHMschoolnow_3", "HHMschoolnow_4", "HHMschoolnow_5", "school", "meetings1", "moneywithdraw", "moneyproblems"]
 
-# --- FUNCTIES ---
+
 def preprocess(df, round_value):
     df_r = df[df['Round'] == round_value].copy()
     round_binary = [col for col in binary if col in df_r.columns]
@@ -114,17 +114,14 @@ def cluster_and_plot(df_grouped, dummy_to_original, round_nr):
     pca = PCA(n_components=2)
     X_pca = pca.fit_transform(X_scaled)
 
-    # Flip PCA-richting consistent met top-variabelen
     pc1, pc2 = pca.components_[0], pca.components_[1]
 
-    # Variabele bijdragen aggregeren per originele feature
     var_contributions_1, var_contributions_2 = {}, {}
     for i, col in enumerate(df_grouped.columns):
         orig = dummy_to_original.get(col, col)
         var_contributions_1[orig] = var_contributions_1.get(orig, 0) + pc1[i]
         var_contributions_2[orig] = var_contributions_2.get(orig, 0) + pc2[i]
 
-    # Check of top bijdragen negatief zijn en flip zo nodig
     if max(var_contributions_1.items(), key=lambda x: abs(x[1]))[1] < 0:
         X_pca[:, 0] *= -1
         pca.components_[0, :] *= -1
@@ -142,9 +139,8 @@ def cluster_and_plot(df_grouped, dummy_to_original, round_nr):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-# --- STREAMLIT UI ---
-st.title("Clusteringanalyse 100WEEKS")
-selected_country = st.selectbox("Kies een land:", countries)
+st.title("Clustering Analysis 100WEEKS")
+selected_country = st.selectbox("Choose a country:", countries)
 df_country = df[df['Country'] == selected_country]
 available_rounds = ['0', '2', '100']
 
