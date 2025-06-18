@@ -149,7 +149,7 @@ def cluster_and_plot(df_grouped, dummy_to_original, round_nr):
 
 st.title("Clustering Analysis 100WEEKS")
 
-df_country = df[df['Country'] == selected_country]
+
 available_rounds = ['0', '2', '100']
 
 for r in available_rounds:
