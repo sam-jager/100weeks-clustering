@@ -148,7 +148,7 @@ def cluster_and_plot(df_grouped, dummy_to_original, round_nr):
     st.plotly_chart(fig, use_container_width=True)
 
 st.title("Clustering Analysis 100WEEKS")
-selected_country = st.selectbox("Select a country:", countries)
+
 df_country = df[df['Country'] == selected_country]
 available_rounds = ['0', '2', '100']
 
