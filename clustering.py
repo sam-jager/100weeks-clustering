@@ -9,8 +9,8 @@ from sklearn.metrics import silhouette_score
 
 @st.cache_data
 def load_data():
-    url = "https://www.dropbox.com/s/xxxxxxx/central-tableau-export-2.0.csv?dl=1"
-    return pd.read_csv(url, low_memory=False)
+    url = "https://raw.githubusercontent.com/sam-jager/100weeks-clustering/refs/heads/main/central-tableau-export-2.0.csv"
+    return df = pd.read_csv(url, low_memory=False)
 
 country = st.selectbox("Select a country", ["GHA", "RWA", "UGA", "CIV", "KEN"])
 
@@ -18,8 +18,7 @@ if country:
     df = load_data()
     df_country = df[df["Country"] == country]
 
-url = "https://raw.githubusercontent.com/jouwgebruikersnaam/jouw-repo/main/central-tableau-export-2.0.csv"
-df = pd.read_csv(url, low_memory=False)
+
 
 
 countries = ['GHA', 'RWA', 'UGA', 'CIV', 'KEN']
