@@ -18,6 +18,8 @@ if country:
     df = load_data()
     df_country = df[df["Country"] == country]
 
+url = "https://raw.githubusercontent.com/jouwgebruikersnaam/jouw-repo/main/central-tableau-export-2.0.csv"
+df = pd.read_csv(url, low_memory=False)
 
 
 countries = ['GHA', 'RWA', 'UGA', 'CIV', 'KEN']
