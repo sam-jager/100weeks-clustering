@@ -13,7 +13,9 @@ def load_data():
     return pd.read_csv(url, low_memory=False)
 
 
-country = st.selectbox("Select a country", ["GHA", "RWA", "UGA", "CIV", "KEN"])
+countries = ["GHA", "RWA", "UGA", "CIV", "KEN"]
+country = st.selectbox("Select a country", countries)
+
 
 if country:
     df = load_data()
@@ -21,8 +23,6 @@ if country:
 
 
 
-
-countries = ['GHA', 'RWA', 'UGA', 'CIV', 'KEN']
 df = df[df['Country'].isin(countries)]
 
 columns = [
