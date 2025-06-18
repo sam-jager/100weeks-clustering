@@ -9,11 +9,14 @@ from sklearn.metrics import silhouette_score
 
 @st.cache_data
 def load_data():
-    url = url = "https://www.dropbox.com/scl/fi/zvt5p3os8wxwkhvjivakl/central-tableau-export-2.0.csv?rlkey=oz8dp0ok7kg6waoaapwdppnny&st=lbod425k&dl=1"
+    url = "https://www.dropbox.com/s/xxxxxxx/central-tableau-export-2.0.csv?dl=1"
     return pd.read_csv(url, low_memory=False)
 
+country = st.selectbox("Select a country", ["GHA", "RWA", "UGA", "CIV", "KEN"])
 
-df = load_data()
+if country:
+    df = load_data()
+    df_country = df[df["Country"] == country]
 
 
 
