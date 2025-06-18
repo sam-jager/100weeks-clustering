@@ -135,7 +135,7 @@ def cluster_and_plot(df_grouped, dummy_to_original, round_nr):
         x=X_pca[:, 0], y=X_pca[:, 1], color=labels.astype(str),
         hover_name=df_grouped.index.astype(str),
         labels={'x': 'PCA 1', 'y': 'PCA 2'},
-        title=f"Clustering voor ronde {round_nr} (k={best_k})"
+        title=f"Clustering for round {round_nr} (k={best_k})"
     )
     st.plotly_chart(fig, use_container_width=True)
 
