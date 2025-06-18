@@ -9,8 +9,9 @@ from sklearn.metrics import silhouette_score
 
 @st.cache_data
 def load_data():
-    url = "https://raw.githubusercontent.com/sam-jager/100weeks-clustering/refs/heads/main/central-tableau-export-2.0.csv"
+    url = "https://raw.githubusercontent.com/sam-jager/100weeks-clustering/main/central-tableau-export-2.0.csv"
     return pd.read_csv(url, low_memory=False)
+
 
 country = st.selectbox("Select a country", ["GHA", "RWA", "UGA", "CIV", "KEN"])
 
