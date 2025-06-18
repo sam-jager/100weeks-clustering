@@ -12,14 +12,16 @@ def load_data():
     url = "https://raw.githubusercontent.com/sam-jager/100weeks-clustering/main/central-tableau-export-2.0.csv"
     return pd.read_csv(url, low_memory=False)
 
+st.title("Clustering Analysis 100WEEKS")
 
+# Eén duidelijke dropdown
 countries = ["GHA", "RWA", "UGA", "CIV", "KEN"]
 country = st.selectbox("Select a country", countries)
-
 
 if country:
     df = load_data()
     df_country = df[df["Country"] == country]
+
 
 
 
@@ -147,7 +149,6 @@ def cluster_and_plot(df_grouped, dummy_to_original, round_nr):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-st.title("Clustering Analysis 100WEEKS")
 
 
 available_rounds = ['0', '2', '100']
