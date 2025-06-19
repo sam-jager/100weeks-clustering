@@ -7,12 +7,17 @@ from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
+st.set_page_config(page_title="100WEEKS Clustering", layout="wide")
+st.title("Clustering Analysis 100WEEKS")
+
 @st.cache_data
 def load_data():
     url = "https://raw.githubusercontent.com/sam-jager/100weeks-clustering/main/central-tableau-export-2.0.csv"
-    return pd.read_csv(url, low_memory=False)
-
-st.title("Clustering Analysis 100WEEKS")
+    try:
+        return pd.read_csv(url, low_memory=False)
+    except Exception as e:
+        st.error(f"Fout bij laden van data: {e}")
+        st.stop()
 
 # Eén duidelijke dropdown
 countries = ["GHA", "RWA", "UGA", "CIV", "KEN"]
