@@ -8,11 +8,14 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
 st.set_page_config(page_title="100WEEKS Clustering", layout="wide")
+
 st.title("Clustering Analysis 100WEEKS")
 
-st.markdown("<!-- KEYWORD: 100WEEKS -->", unsafe_allow_html=True)
-st.markdown("<meta http-equiv='refresh' content='600'>", unsafe_allow_html=True)
+# HTML keyword voor UptimeRobot, zichtbaar in interface
+st.write("Status: 100WEEKS")
 
+# Automatische refresh elke 10 minuten
+st.markdown("<meta http-equiv='refresh' content='600'>", unsafe_allow_html=True)
 
 @st.cache_data
 def load_data():
@@ -20,13 +23,11 @@ def load_data():
     try:
         df = pd.read_csv(url, low_memory=False)
         if df.empty:
-            raise ValueError("The dataset is empty.")
+            raise ValueError("Dataset is leeg.")
         return df
     except Exception as e:
-        st.error(f"Error while loading the dataset: {e}")
-        st.markdown("<!-- KEYWORD: 100WEEKS -->", unsafe_allow_html=True)
+        st.error(f"Fout bij laden van data: {e}")
         st.stop()
-
 
 countries = ["GHA", "RWA", "UGA", "CIV", "KEN"]
 country = st.selectbox("Select a country", countries)
@@ -175,3 +176,4 @@ if country:
                 st.info(f"Geen bruikbare data voor ronde {r}.")
         except Exception as e:
             st.error(f"Fout bij verwerken van ronde {r}: {e}")
+
