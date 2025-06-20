@@ -18,10 +18,15 @@ st.markdown("<meta http-equiv='refresh' content='600'>", unsafe_allow_html=True)
 def load_data():
     url = "https://raw.githubusercontent.com/sam-jager/100weeks-clustering/main/central-tableau-export-2.0.csv"
     try:
-        return pd.read_csv(url, low_memory=False)
+        df = pd.read_csv(url, low_memory=False)
+        if df.empty:
+            raise ValueError("The dataset is empty.")
+        return df
     except Exception as e:
-        st.error(f"Fout bij laden van data: {e}")
+        st.error(f"Error while loading the dataset: {e}")
+        st.markdown("<!-- KEYWORD: 100WEEKS -->", unsafe_allow_html=True)
         st.stop()
+
 
 countries = ["GHA", "RWA", "UGA", "CIV", "KEN"]
 country = st.selectbox("Select a country", countries)
