@@ -10,6 +10,10 @@ from sklearn.metrics import silhouette_score
 st.set_page_config(page_title="100WEEKS Clustering", layout="wide")
 st.title("Clustering Analysis 100WEEKS")
 
+st.markdown("<!-- KEYWORD: 100WEEKS -->", unsafe_allow_html=True)
+st.markdown("<meta http-equiv='refresh' content='600'>", unsafe_allow_html=True)
+
+
 @st.cache_data
 def load_data():
     url = "https://raw.githubusercontent.com/sam-jager/100weeks-clustering/main/central-tableau-export-2.0.csv"
