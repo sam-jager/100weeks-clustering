@@ -164,7 +164,7 @@ if country:
             'Groupnr': groupnrs
         })
     
-        selected_group = st.text_input(f"Enter a group number to highlight in the plot for round {round_nr}:")
+        selected_group = st.text_input(f"Enter a group number to highlight it in the plot for round {round_nr}:")
     
         fig = px.scatter(
             df_plot,
