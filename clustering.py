@@ -12,7 +12,6 @@ st.set_page_config(page_title="100WEEKS Clustering", layout="wide")
 
 st.title("Clustering Analysis 100WEEKS")
 
-# Automatische refresh elke 10 minuten
 st.markdown("<meta http-equiv='refresh' content='600'>", unsafe_allow_html=True)
 
 @st.cache_data
@@ -127,7 +126,6 @@ if country:
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(df_grouped)
     
-        # Beste aantal clusters bepalen
         best_k = 2
         best_score = -1
         for k in range(2, min(5, len(X_scaled))):
@@ -138,15 +136,12 @@ if country:
                 best_k = k
                 best_score = score
     
-        # KMeans clustering met beste k
         kmeans = KMeans(n_clusters=best_k, n_init=10, random_state=42)
         labels = kmeans.fit_predict(X_scaled)
     
-        # PCA voor 2D visualisatie
         pca = PCA(n_components=2)
         X_pca = pca.fit_transform(X_scaled)
     
-        # Assen spiegelen op basis van richting
         pc1, pc2 = pca.components_[0], pca.components_[1]
         var_contributions_1, var_contributions_2 = {}, {}
         for i, col in enumerate(df_grouped.columns):
@@ -161,7 +156,6 @@ if country:
             X_pca[:, 1] *= -1
             pca.components_[1, :] *= -1
     
-        # Groepsnummers
         groupnrs = df_grouped.index.astype(str)
         df_plot = pd.DataFrame({
             'x': X_pca[:, 0],
@@ -170,10 +164,8 @@ if country:
             'Groupnr': groupnrs
         })
     
-        # Zoekveld voor groepnummer
         selected_group = st.text_input(f"Enter a group number to highlight in the plot for round {round_nr}:")
     
-        # Plot maken met accentuering
         fig = px.scatter(
             df_plot,
             x='x',
@@ -183,8 +175,7 @@ if country:
             labels={'x': 'Socio-economic status', 'y': 'Living conditions and facilities'},
             title=f"Clustering for round {round_nr}"
         )
-    
-        # Als een groepnummer is ingevuld en gevonden is, markeer die
+
         if selected_group and selected_group in df_plot['Groupnr'].values:
             selected = df_plot[df_plot['Groupnr'] == selected_group]
             fig.add_trace(go.Scatter(
@@ -199,9 +190,7 @@ if country:
     
         st.plotly_chart(fig, use_container_width=True)
 
-
-
-
+    
     available_rounds = ['0', '2', '100']
     for r in available_rounds:
         st.subheader(f"Round {r}")
