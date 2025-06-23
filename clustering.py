@@ -171,7 +171,7 @@ if country:
         })
     
         # Zoekveld voor groepnummer
-        selected_group = st.text_input(f"Zoek een groepnummer voor ronde {round_nr} (optioneel):")
+        selected_group = st.text_input(f"Enter a group number to highlight in the plot for round {round_nr}:")
     
         # Plot maken met accentuering
         fig = px.scatter(
