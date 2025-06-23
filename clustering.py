@@ -149,7 +149,7 @@ if country:
         })
     
         # Zoekbalk
-        selected_group = st.text_input(f"Zoek een Groupnr voor ronde {round_nr} (optioneel):")
+        selected_group = st.text_input(f"Enter a group number to highlight in the plot for round {round_nr}:")
         highlight_group = group_df[group_df['Groupnr'] == selected_group] if selected_group in group_ids.values else pd.DataFrame()
     
         # Plot
