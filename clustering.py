@@ -122,59 +122,59 @@ if country:
         return df_grouped, dummy_to_original
 
     def cluster_and_plot(df_grouped, dummy_to_original, round_nr):
-    scaler = get_scaler()
-    X_scaled = scaler.fit_transform(df_grouped)
-
-    best_k = 2
-    best_score = -1
-    for k in range(2, min(5, len(X_scaled))):
-        kmeans = KMeans(n_clusters=k, n_init=10, random_state=42)
+        scaler = get_scaler()
+        X_scaled = scaler.fit_transform(df_grouped)
+    
+        best_k = 2
+        best_score = -1
+        for k in range(2, min(5, len(X_scaled))):
+            kmeans = KMeans(n_clusters=k, n_init=10, random_state=42)
+            labels = kmeans.fit_predict(X_scaled)
+            score = silhouette_score(X_scaled, labels)
+            if score > best_score:
+                best_k = k
+                best_score = score
+    
+        kmeans = KMeans(n_clusters=best_k, n_init=10, random_state=42)
         labels = kmeans.fit_predict(X_scaled)
-        score = silhouette_score(X_scaled, labels)
-        if score > best_score:
-            best_k = k
-            best_score = score
-
-    kmeans = KMeans(n_clusters=best_k, n_init=10, random_state=42)
-    labels = kmeans.fit_predict(X_scaled)
-    pca = PCA(n_components=2)
-    X_pca = pca.fit_transform(X_scaled)
-
-    group_ids = df_grouped.index.astype(str)
-    group_df = pd.DataFrame({
-        'x': X_pca[:, 0],
-        'y': X_pca[:, 1],
-        'Cluster': labels.astype(str),
-        'Groupnr': group_ids
-    })
-
-    # Zoekbalk
-    selected_group = st.text_input(f"Zoek een Groupnr voor ronde {round_nr} (optioneel):")
-    highlight_group = group_df[group_df['Groupnr'] == selected_group] if selected_group in group_ids.values else pd.DataFrame()
-
-    # Plot
-    fig = px.scatter(
-        group_df,
-        x='x',
-        y='y',
-        color='Cluster',
-        hover_name='Groupnr',
-        labels={'x': 'Socio-economic status', 'y': 'Living conditions and facilities'},
-        title=f"Clustering for round {round_nr}"
-    )
-
-    # Accentueer geselecteerde groep
-    if not highlight_group.empty:
-        fig.add_scatter(
-            x=highlight_group['x'],
-            y=highlight_group['y'],
-            mode='markers+text',
-            marker=dict(size=15, color='black', symbol='x'),
-            text=highlight_group['Groupnr'],
-            name='Geselecteerde groep'
+        pca = PCA(n_components=2)
+        X_pca = pca.fit_transform(X_scaled)
+    
+        group_ids = df_grouped.index.astype(str)
+        group_df = pd.DataFrame({
+            'x': X_pca[:, 0],
+            'y': X_pca[:, 1],
+            'Cluster': labels.astype(str),
+            'Groupnr': group_ids
+        })
+    
+        # Zoekbalk
+        selected_group = st.text_input(f"Zoek een Groupnr voor ronde {round_nr} (optioneel):")
+        highlight_group = group_df[group_df['Groupnr'] == selected_group] if selected_group in group_ids.values else pd.DataFrame()
+    
+        # Plot
+        fig = px.scatter(
+            group_df,
+            x='x',
+            y='y',
+            color='Cluster',
+            hover_name='Groupnr',
+            labels={'x': 'Socio-economic status', 'y': 'Living conditions and facilities'},
+            title=f"Clustering for round {round_nr}"
         )
-
-    st.plotly_chart(fig, use_container_width=True)
+    
+        # Accentueer geselecteerde groep
+        if not highlight_group.empty:
+            fig.add_scatter(
+                x=highlight_group['x'],
+                y=highlight_group['y'],
+                mode='markers+text',
+                marker=dict(size=15, color='black', symbol='x'),
+                text=highlight_group['Groupnr'],
+                name='Geselecteerde groep'
+            )
+    
+        st.plotly_chart(fig, use_container_width=True)
 
 
     available_rounds = ['0', '2', '100']
