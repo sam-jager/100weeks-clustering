@@ -6,6 +6,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
+import plotly.graph_objects as go
 
 st.set_page_config(page_title="100WEEKS Clustering", layout="wide")
 
@@ -122,9 +123,12 @@ if country:
         return df_grouped, dummy_to_original
 
     def cluster_and_plot(df_grouped, dummy_to_original, round_nr):
-        scaler = get_scaler()
+    
+
+        scaler = StandardScaler()
         X_scaled = scaler.fit_transform(df_grouped)
     
+        # Beste aantal clusters bepalen
         best_k = 2
         best_score = -1
         for k in range(2, min(5, len(X_scaled))):
@@ -135,46 +139,67 @@ if country:
                 best_k = k
                 best_score = score
     
+        # KMeans clustering met beste k
         kmeans = KMeans(n_clusters=best_k, n_init=10, random_state=42)
         labels = kmeans.fit_predict(X_scaled)
+    
+        # PCA voor 2D visualisatie
         pca = PCA(n_components=2)
         X_pca = pca.fit_transform(X_scaled)
     
-        group_ids = df_grouped.index.astype(str)
-        group_df = pd.DataFrame({
+        # Assen spiegelen op basis van richting
+        pc1, pc2 = pca.components_[0], pca.components_[1]
+        var_contributions_1, var_contributions_2 = {}, {}
+        for i, col in enumerate(df_grouped.columns):
+            orig = dummy_to_original.get(col, col)
+            var_contributions_1[orig] = var_contributions_1.get(orig, 0) + pc1[i]
+            var_contributions_2[orig] = var_contributions_2.get(orig, 0) + pc2[i]
+    
+        if max(var_contributions_1.items(), key=lambda x: abs(x[1]))[1] < 0:
+            X_pca[:, 0] *= -1
+            pca.components_[0, :] *= -1
+        if max(var_contributions_2.items(), key=lambda x: abs(x[1]))[1] < 0:
+            X_pca[:, 1] *= -1
+            pca.components_[1, :] *= -1
+    
+        # Groepsnummers
+        groupnrs = df_grouped.index.astype(str)
+        df_plot = pd.DataFrame({
             'x': X_pca[:, 0],
             'y': X_pca[:, 1],
-            'Cluster': labels.astype(str),
-            'Groupnr': group_ids
+            'label': labels.astype(str),
+            'Groupnr': groupnrs
         })
     
-        # Zoekbalk
-        selected_group = st.text_input(f"Enter a group number to highlight in the plot for round {round_nr}:")
-        highlight_group = group_df[group_df['Groupnr'] == selected_group] if selected_group in group_ids.values else pd.DataFrame()
+        # Zoekveld voor groepnummer
+        selected_group = st.text_input(f"Zoek een groepnummer voor ronde {round_nr} (optioneel):")
     
-        # Plot
+        # Plot maken met accentuering
         fig = px.scatter(
-            group_df,
+            df_plot,
             x='x',
             y='y',
-            color='Cluster',
+            color='label',
             hover_name='Groupnr',
             labels={'x': 'Socio-economic status', 'y': 'Living conditions and facilities'},
             title=f"Clustering for round {round_nr}"
         )
     
-        # Accentueer geselecteerde groep
-        if not highlight_group.empty:
-            fig.add_scatter(
-                x=highlight_group['x'],
-                y=highlight_group['y'],
+        # Als een groepnummer is ingevuld en gevonden is, markeer die
+        if selected_group and selected_group in df_plot['Groupnr'].values:
+            selected = df_plot[df_plot['Groupnr'] == selected_group]
+            fig.add_trace(go.Scatter(
+                x=selected['x'],
+                y=selected['y'],
                 mode='markers+text',
-                marker=dict(size=15, color='black', symbol='x'),
-                text=highlight_group['Groupnr'],
-                name='Geselecteerde groep'
-            )
+                marker=dict(color='black', size=14, symbol='x'),
+                text=[f"Group {selected_group}"],
+                textposition="top center",
+                name="Selected Group"
+            ))
     
         st.plotly_chart(fig, use_container_width=True)
+
 
 
     available_rounds = ['0', '2', '100']
