@@ -124,7 +124,6 @@ if country:
 
     def cluster_and_plot(df_grouped, dummy_to_original, round_nr):
     
-
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(df_grouped)
     
@@ -199,6 +198,7 @@ if country:
             ))
     
         st.plotly_chart(fig, use_container_width=True)
+
 
 
 
