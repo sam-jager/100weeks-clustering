@@ -17,14 +17,15 @@ st.markdown("<meta http-equiv='refresh' content='600'>", unsafe_allow_html=True)
 @st.cache_data
 def load_data():
     url = "https://raw.githubusercontent.com/sam-jager/100weeks-clustering/main/central-tableau-export-2.0.csv"
-    try:
-        df = pd.read_csv(url, low_memory=False)
-        if df.empty:
-            raise ValueError("Dataset is leeg.")
-        return df
-    except Exception as e:
-        st.error(f"Fout bij laden van data: {e}")
-        st.stop()
+    return pd.read_csv(url, low_memory=False)
+
+@st.cache_resource
+def get_encoder():
+    return OneHotEncoder(sparse_output=False, handle_unknown='ignore')
+
+@st.cache_resource
+def get_scaler():
+    return StandardScaler()
 
 countries = ["GHA", "RWA", "UGA", "CIV", "KEN"]
 country = st.selectbox("Select a country", countries)
@@ -82,6 +83,7 @@ if country:
     binary_neg = ["debt", "foodsecurity1", "foodsecurity2", "foodsecurity3", "foodsecurity4", "foodsecurity5", "foodsecurity6", "foodsecurity7", "foodsecurity8", "foodsecurity9", "childmortality", "jealousy", "assetsmatrix1_4", "assetsmatrix1_5", "assetsmatrix1_22", "assetsmatrix2_15", "assetsmatrix2_8", "assetsmatrix3_17", "assetsmatrix2_17", "assetsmatrix2_18", "assetsmatrix2_19", "assetsmatrix2_11", "assetsmatrix3_15", "assetsmatrix3_23"]
     binary_pos = ["HHMschoolnow_1", "HHMschoolnow_2", "HHMschoolnow_3", "HHMschoolnow_4", "HHMschoolnow_5", "school", "meetings1", "moneywithdraw", "moneyproblems"]
 
+    @st.cache_data
     def preprocess(df, round_value):
         df_r = df[df['Round'] == round_value].copy()
         round_binary = [col for col in binary if col in df_r.columns]
