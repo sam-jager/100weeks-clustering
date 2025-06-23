@@ -11,9 +11,6 @@ st.set_page_config(page_title="100WEEKS Clustering", layout="wide")
 
 st.title("Clustering Analysis 100WEEKS")
 
-# HTML keyword voor UptimeRobot, zichtbaar in interface
-st.write("Status: 100WEEKS")
-
 # Automatische refresh elke 10 minuten
 st.markdown("<meta http-equiv='refresh' content='600'>", unsafe_allow_html=True)
 
