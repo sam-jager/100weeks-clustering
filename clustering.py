@@ -122,47 +122,60 @@ if country:
         return df_grouped, dummy_to_original
 
     def cluster_and_plot(df_grouped, dummy_to_original, round_nr):
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(df_grouped)
+    scaler = get_scaler()
+    X_scaled = scaler.fit_transform(df_grouped)
 
-        best_k = 2
-        best_score = -1
-        for k in range(2, min(5, len(X_scaled))):
-            kmeans = KMeans(n_clusters=k, n_init=10, random_state=42)
-            labels = kmeans.fit_predict(X_scaled)
-            score = silhouette_score(X_scaled, labels)
-            if score > best_score:
-                best_k = k
-                best_score = score
-
-        kmeans = KMeans(n_clusters=best_k, n_init=10, random_state=42)
+    best_k = 2
+    best_score = -1
+    for k in range(2, min(5, len(X_scaled))):
+        kmeans = KMeans(n_clusters=k, n_init=10, random_state=42)
         labels = kmeans.fit_predict(X_scaled)
-        pca = PCA(n_components=2)
-        X_pca = pca.fit_transform(X_scaled)
+        score = silhouette_score(X_scaled, labels)
+        if score > best_score:
+            best_k = k
+            best_score = score
 
-        pc1, pc2 = pca.components_[0], pca.components_[1]
+    kmeans = KMeans(n_clusters=best_k, n_init=10, random_state=42)
+    labels = kmeans.fit_predict(X_scaled)
+    pca = PCA(n_components=2)
+    X_pca = pca.fit_transform(X_scaled)
 
-        var_contributions_1, var_contributions_2 = {}, {}
-        for i, col in enumerate(df_grouped.columns):
-            orig = dummy_to_original.get(col, col)
-            var_contributions_1[orig] = var_contributions_1.get(orig, 0) + pc1[i]
-            var_contributions_2[orig] = var_contributions_2.get(orig, 0) + pc2[i]
+    group_ids = df_grouped.index.astype(str)
+    group_df = pd.DataFrame({
+        'x': X_pca[:, 0],
+        'y': X_pca[:, 1],
+        'Cluster': labels.astype(str),
+        'Groupnr': group_ids
+    })
 
-        if max(var_contributions_1.items(), key=lambda x: abs(x[1]))[1] < 0:
-            X_pca[:, 0] *= -1
-            pca.components_[0, :] *= -1
+    # Zoekbalk
+    selected_group = st.text_input(f"Zoek een Groupnr voor ronde {round_nr} (optioneel):")
+    highlight_group = group_df[group_df['Groupnr'] == selected_group] if selected_group in group_ids.values else pd.DataFrame()
 
-        if max(var_contributions_2.items(), key=lambda x: abs(x[1]))[1] < 0:
-            X_pca[:, 1] *= -1
-            pca.components_[1, :] *= -1
+    # Plot
+    fig = px.scatter(
+        group_df,
+        x='x',
+        y='y',
+        color='Cluster',
+        hover_name='Groupnr',
+        labels={'x': 'Socio-economic status', 'y': 'Living conditions and facilities'},
+        title=f"Clustering for round {round_nr}"
+    )
 
-        fig = px.scatter(
-            x=X_pca[:, 0], y=X_pca[:, 1], color=labels.astype(str),
-            hover_name=df_grouped.index.astype(str),
-            labels={'x': 'Socio-economic status', 'y': 'Living conditions and facilities'},
-            title=f"Clustering for round {round_nr}"
+    # Accentueer geselecteerde groep
+    if not highlight_group.empty:
+        fig.add_scatter(
+            x=highlight_group['x'],
+            y=highlight_group['y'],
+            mode='markers+text',
+            marker=dict(size=15, color='black', symbol='x'),
+            text=highlight_group['Groupnr'],
+            name='Geselecteerde groep'
         )
-        st.plotly_chart(fig, use_container_width=True)
+
+    st.plotly_chart(fig, use_container_width=True)
+
 
     available_rounds = ['0', '2', '100']
     for r in available_rounds:
