@@ -199,7 +199,7 @@ if country:
             if not df_grouped.empty:
                 cluster_and_plot(df_grouped, dummy_to_original, r)
             else:
-                st.info(f"Geen bruikbare data voor ronde {r}.")
+                st.info(f"No available data for round {r}.")
         except Exception as e:
-            st.error(f"Fout bij verwerken van ronde {r}: {e}")
+            st.error(f"Error for round {r}: {e}")
 
