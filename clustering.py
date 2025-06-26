@@ -193,8 +193,8 @@ if country:
     
     available_rounds = ['0', '2', '100']
     for r in available_rounds:
-    st.subheader(f"Round {r}")
-    df_grouped, dummy_to_original = preprocess(df_country, r)
+        st.subheader(f"Round {r}")
+        df_grouped, dummy_to_original = preprocess(df_country, r)
     if not df_grouped.empty:
         cluster_and_plot(df_grouped, dummy_to_original, r)
 
