@@ -193,13 +193,8 @@ if country:
     
     available_rounds = ['0', '2', '100']
     for r in available_rounds:
-        st.subheader(f"Round {r}")
-        try:
-            df_grouped, dummy_to_original = preprocess(df_country, r)
-            if not df_grouped.empty:
-                cluster_and_plot(df_grouped, dummy_to_original, r)
-            else:
-                st.info(f"No available data for round {r}.")
-        except Exception as e:
-            st.error(f"Error for round {r}: {e}")
+    st.subheader(f"Round {r}")
+    df_grouped, dummy_to_original = preprocess(df_country, r)
+    if not df_grouped.empty:
+        cluster_and_plot(df_grouped, dummy_to_original, r)
 
